@@ -57,41 +57,45 @@ async def api_create_new_workflow(request):
     return web.Response(status=201)
 
 async def api_sync_my_collections(_):
-    if not path.exists(config_path):
-        return web.Response(status=404)
+    try:
+        if not path.exists(config_path):
+            return web.Response(status=404, text="Config path does not exist")
 
-    config = get_config()
-    git_repo = config.get('git_repo')
-    if not git_repo:
-        return web.Response(status=404)
+        config = get_config()
+        git_repo = config.get('git_repo')
+        if not git_repo:
+            return web.Response(status=404, text="Git repo not found in config")
 
-    git_init()
+        git_init()
 
-    # 添加远程仓库
-    await add_remote_if_needed(git_remote_name, git_repo, collections_path)
-    
-    # 获取当前分支
-    branch = await get_default_branch(git_remote_name, collections_path)
-    print('branch:', branch)
-    
-    if await check_status(collections_path):
-        # 如果有更改，执行提交操作
-        await commit_changes(collections_path)
+        # 添加远程仓库
+        await add_remote_if_needed(git_remote_name, git_repo, collections_path)
         
-        # 拉取远程仓库
-        await pull_remote(git_remote_name,branch, collections_path)
+        # 获取当前分支
+        branch = await get_default_branch(git_remote_name, collections_path)
+        print('branch:', branch)
         
-        # 合并远程分支并推送
-        await merge_and_push(git_remote_name, branch, collections_path)
-        
-    else:
-        # 拉取远程仓库
-        await pull_remote(git_remote_name, branch, collections_path)
-        
-        # 设置分支上游
-        await set_branch_upstream(git_remote_name, branch, collections_path)
-        
-    return web.Response(status=200)
+        if await check_status(collections_path):
+            # 如果有更改，执行提交操作
+            await commit_changes(collections_path)
+            
+            # 拉取远程仓库
+            await pull_remote(git_remote_name,branch, collections_path)
+            
+            # 合并远程分支并推送
+            await merge_and_push(git_remote_name, branch, collections_path)
+            
+        else:
+            # 拉取远程仓库
+            await pull_remote(git_remote_name, branch, collections_path)
+            
+            # 设置分支上游
+            await set_branch_upstream(git_remote_name, branch, collections_path)
+            
+        return web.Response(status=200)
+
+    except Exception as e:
+        return web.Response(status=500, text=str(e))
 
 async def get_default_branch(remote_name, collections_path):
     cmd = f'git remote show {remote_name} | grep "HEAD branch"'
