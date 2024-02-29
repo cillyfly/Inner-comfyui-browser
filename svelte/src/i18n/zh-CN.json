@@ -24,7 +24,8 @@
     "btn": {
       "save": "保存",
       "sync": "同步",
-      "syncing": "同步中"
+      "syncing": "同步中",
+      "permission": "权限设置"
     },
     "syncInput": {
       "placeholder": "Git 地址，比如 git@github.com:tzwm/comfyui-workflows.git"
@@ -42,7 +43,9 @@
       "deleteFailed": "删除失败。请在控制台查看详情。",
       "updated": "更新成功",
       "UpdatedFailed": "更新失败。请在控制台查看详情。",
-      "Invalid filename": "不是个有效文件名"
+      "Invalid filename": "不是个有效文件名",
+      "permissionSuccess": "权限修改成功",
+      "permissionFailed": "权限修改失败。请在控制台查看详情。"
     }
   },
   "filesList": {

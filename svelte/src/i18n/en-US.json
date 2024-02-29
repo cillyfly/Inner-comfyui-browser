@@ -24,7 +24,8 @@
     "btn": {
       "save": "Save",
       "sync": "Sync",
-      "syncing": "Syncing"
+      "syncing": "Syncing",
+      "permission": "Permission"
     },
     "syncInput": {
       "placeholder": "Git URL likes 'git@github.com:tzwm/comfyui-workflows.git'"
@@ -42,7 +43,9 @@
       "deleteFailed": "Failed to delete the file. Please check the ComfyUI server.",
       "updated": "Updated",
       "updatedFailed": "Failed to update. Please check the ComfyUI server.",
-      "Invalid filename": "Invalid filename"
+      "Invalid filename": "Invalid filename",
+      "permissionSuccess": "Permission modified successfully.",
+      "permissionFailed": "Failed to modify permission. Please check the ComfyUI server."
     }
   },
   "filesList": {

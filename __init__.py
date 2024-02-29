@@ -18,6 +18,8 @@ browser_app.add_routes([
     web.post("/collections", collections.api_add_to_collections),
     web.post("/collections/workflows", collections.api_create_new_workflow),
     web.post("/collections/sync", collections.api_sync_my_collections),
+    web.post("/collections/permission", collections.api_set_user_permission),
+    web.get("/collections/permission_check", collections.api_to_check_user_permission),
 
     web.get("/sources", sources.api_get_sources),
     web.post("/sources", sources.api_create_source),

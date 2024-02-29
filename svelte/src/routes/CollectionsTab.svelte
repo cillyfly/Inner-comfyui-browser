@@ -19,6 +19,7 @@
   let loaded: boolean = false;
   let searchQuery = '';
   let searchRegex = new RegExp('');
+  let isPermission:boolean = false;
 
   $: if (folderPath != undefined) {
     refresh();
@@ -38,6 +39,10 @@
     loaded = true;
     files = await fetchFiles(folderType, comfyUrl, folderPath);
     loaded = true;
+  }
+
+  $: if (isPermission === false) {
+    onClickCheckPermission();
   }
 
   onMount(async () => {
@@ -90,12 +95,39 @@
         git_repo: configGitRepo,
       }),
     });
+  }
 
-    fetchConfig();
+  async function onClickCheckPermission() {
+    const isOK = await fetch(comfyUrl + '/browser/collections/permission_check');
+
+    if (isOK.ok){
+      isPermission = true;
+      return;
+    }
+  }
+
+  async function onClickSetPermission() {
+
+    const username = prompt("请输入git.username");
+    if (username === null) {
+      return;
+    }
+    const password = prompt("请输入git.password");
+    if (password === null) {
+      return;
+    }
+    const res = await fetch(comfyUrl + '/browser/collections/permission', {
+      method: 'POST',
+      body: JSON.stringify({
+        username,
+        password,
+      }),
+    });
+
     toast.show(
       res.ok,
-      tt('toast.configUpdated'),
-      tt('toast.configUpdatedFailed'),
+      tt('toast.permissionSuccess'),
+      tt('toast.permissionFailed'),
     );
   }
 
@@ -241,6 +273,12 @@
   <button class="btn btn-outline btn-accent" on:click={onClickSyncCollections}>
     {tt('btn.sync')}
   </button>
+  {#if !isPermission}
+  <button class="btn btn-outline btn-accent" on:click={onClickSetPermission}>
+    {tt('btn.permission')}
+  </button>
+  {/if}
+
 </div>
 
 <div class="max-w-full text-sm breadcrumbs flex flex-row ml-4">

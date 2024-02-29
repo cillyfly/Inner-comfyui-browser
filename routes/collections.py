@@ -201,3 +201,26 @@ async def merge_and_push(remote_name, branch, collections_path):
     result = run_cmd(cmd, collections_path)
     if result.returncode != 0:
         raise ValueError(f'Error running git push {remote_name} {branch}: {result.stderr}')
+
+async def api_to_check_user_permission(request):
+    cmd = 'git remote show {remote_name}'
+    result = run_cmd(cmd, collections_path)
+    # fatal: could not read Username
+    if 'fatal: could not read Username' in result.stderr:
+        return web.Response(status=401)
+    return web.Response(status=200)
+
+# set user permission
+async def api_set_user_permission(request):
+    json_data = await request.json()
+    username = json_data.get('username')
+    password = json_data.get('password')
+    cmd = f'git config --global user.name {username}'
+    result = run_cmd(cmd, collections_path)
+    if result.returncode != 0:
+        raise ValueError(f'Error running git config --global user.name {username}: {result.stderr}')
+    cmd = f'git config --global user.password {password}'
+    result = run_cmd(cmd, collections_path)
+    if result.returncode != 0:
+        raise ValueError(f'Error running git config --global user.password : {result.stderr}')
+    return web.Response(status=201)
