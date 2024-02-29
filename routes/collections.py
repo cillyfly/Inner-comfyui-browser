@@ -204,7 +204,7 @@ async def merge_and_push(remote_name, branch, collections_path):
         raise ValueError(f'Error running git push {remote_name} {branch}: {result.stderr}')
 
 async def api_to_check_user_permission(request):
-    cmd = 'git remote show {remote_name}'
+    cmd = f'git remote show {git_remote_name}'
     result = run_cmd(cmd, collections_path)
     # fatal: could not read Username
     if result.returncode != 0:
