@@ -95,6 +95,15 @@
         git_repo: configGitRepo,
       }),
     });
+
+    if (res.ok) {
+      await onClickCheckPermission();
+    }
+    toast.show(
+      res.ok,
+      tt('toast.configUpdated'),
+      tt('toast.configUpdatedFailed'),
+    );
   }
 
   async function onClickCheckPermission() {
