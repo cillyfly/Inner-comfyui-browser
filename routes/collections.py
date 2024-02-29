@@ -212,15 +212,39 @@ async def api_to_check_user_permission(request):
 
 # set user permission
 async def api_set_user_permission(request):
+    try:
+        await create_git_credentials(request)
+    except Exception as e:
+        return web.Response(status=500, text=str(e))
+    return web.Response(status=201)
+
+# Create git-redentials
+async def create_git_credentials(request):
+    config = get_config()
+    git_repo = config.get('git_repo')
     json_data = await request.json()
     username = json_data.get('username')
     password = json_data.get('password')
-    cmd = f'git config --global user.name {username}'
+
+    # get schema from git_repo
+    schema = git_repo.split('://')[0]
+    # get the rest of the url
+    url = git_repo.split('://')[1]
+    
+    # create the git-credentials file
+    cmd = f'touch ~/.git-credentials'
     result = run_cmd(cmd, collections_path)
     if result.returncode != 0:
-        raise ValueError(f'Error running git config --global user.name {username}: {result.stderr}')
-    cmd = f'git config --global user.password {password}'
+        raise ValueError(f'Error running touch ~/.git-credentials: {result.stderr}')
+    
+    # insert the username and password into the git-credentials file
+    cmd = f'echo "{schema}://{username}:{password}@{url}" > ~/.git-credentials'
     result = run_cmd(cmd, collections_path)
     if result.returncode != 0:
-        raise ValueError(f'Error running git config --global user.password : {result.stderr}')
-    return web.Response(status=201)
+        raise ValueError(f'Error running echo "{schema}://{username}:password@{url}" > ~/.git-credentials: {result.stderr}')
+    
+    cmd = f'git config credential.helper store'
+    result = run_cmd(cmd, collections_path)
+    if result.returncode != 0:
+        raise ValueError(f'Error running git config --global credential.helper store: {result.stderr}')
+    
