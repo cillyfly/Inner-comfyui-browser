@@ -22,8 +22,8 @@
       "placeholder": "根据文件名和备忘搜索"
     },
     "btn": {
-      "save": "保存",
-      "sync": "同步",
+      "save": "SAVE",
+      "sync": "SYNC",
       "syncing": "同步中"
     },
     "syncInput": {
