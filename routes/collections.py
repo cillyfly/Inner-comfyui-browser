@@ -155,7 +155,7 @@ async def pull_remote(remote_name,branch, collections_path):
 # checkout branch if it exists
 async def checkout_branch_needed(branch, collections_path):
     # current branch
-    cmd = 'git branch --show-current'
+    cmd = 'git rev-parse --abbrev-ref HEAD'
     result = run_cmd(cmd, collections_path)
     # if the current branch is the same as the branch we want to checkout
     if result.stdout.strip() != branch:
