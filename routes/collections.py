@@ -206,7 +206,7 @@ async def api_to_check_user_permission(request):
     cmd = 'git remote show {remote_name}'
     result = run_cmd(cmd, collections_path)
     # fatal: could not read Username
-    if 'fatal: could not read Username' in result.stderr:
+    if result.returncode != 0:
         return web.Response(status=401)
     return web.Response(status=200)
 
