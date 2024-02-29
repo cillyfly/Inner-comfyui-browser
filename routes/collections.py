@@ -2,6 +2,7 @@ from os import path, mkdir
 from aiohttp import web
 import shutil
 import time
+from urllib.parse import quote
 
 from ..utils import collections_path, get_parent_path, add_uuid_to_filename, \
     config_path, get_config, git_init, run_cmd, git_remote_name
@@ -225,9 +226,10 @@ async def create_git_credentials(request):
     json_data = await request.json()
     username = json_data.get('username')
     password = json_data.get('password')
-
-    # get schema from git_repo
-    schema = git_repo.split('://')[0]
+    
+    username_encoded = quote(username)
+    password_encoded = quote(password)
+    
     # get the rest of the url
     url = git_repo.split('://')[1]
     
@@ -237,11 +239,10 @@ async def create_git_credentials(request):
     if result.returncode != 0:
         raise ValueError(f'Error running touch ~/.git-credentials: {result.stderr}')
     
-    # insert the username and password into the git-credentials file
-    cmd = f'echo "{schema}://{username}:{password}@{url}" > ~/.git-credentials'
+    cmd = f'echo "http://{username_encoded}:{password_encoded}@{url}" > ~/.git-credentials'
     result = run_cmd(cmd, collections_path)
     if result.returncode != 0:
-        raise ValueError(f'Error running echo "{schema}://{username}:password@{url}" > ~/.git-credentials: {result.stderr}')
+        raise ValueError(f'Error running echo "http://{username_encoded}:password@{url}" > ~/.git-credentials: {result.stderr}')
     
     cmd = f'git config credential.helper store'
     result = run_cmd(cmd, collections_path)
