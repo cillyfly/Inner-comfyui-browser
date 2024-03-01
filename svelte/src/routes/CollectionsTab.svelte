@@ -97,6 +97,7 @@
     });
 
     if (res.ok) {
+      console.log('config updated and check permission');
       await onClickCheckPermission();
     }
     toast.show(
@@ -111,6 +112,7 @@
 
     if (isOK.ok){
       isPermission = true;
+      console.log('permission is ok');      
       return;
     }
   }
